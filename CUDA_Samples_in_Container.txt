@@ -1,0 +1,36 @@
+
+This document serves to guide how to achieve the CUDA samples running in a cuda container
+
+1. First, gain access to the samples directory from the CUDA toolkit
+	a. Ideally this is an install option. Not sure why the public cuda containers seem not to include them.
+	b. Starting with CUDA 9.2, we do publish the samples at https://github.com/NVIDIA/cuda-samples/tree/master/Samples, however our CUDA version is too early.
+	c. Instead, NVIDIA is providing the customer with direct links to download. Samples.tar is the full samples directory, and Samples_1.tar is the 1_Utilities sub folder and helper files.
+
+2. Extract samples 
+	a. untar the chosen samples directory in home folder on worker VM
+	
+	$ tar -xvf Samples_1.tar
+
+3. Spin up the public cuda-devel container
+	a. Install the docker container runtime (already done in existing customer Kubernetes deloyment)
+	b. Launch the container interactively (-ti options, bash command) passing through home directory (-v option, maps ~ on host to /home in container) and user id (-u option)
+
+	$ docker run -ti --rm -v ~:/home -u $(id -u):$(id -g) nvidia/cuda:9.0-devel bash
+
+	c. Should be dropped into the container with home directory mapped to /home
+
+4. Compile and run samples
+	a. Change to the sample directory you wish to run. 1_Utilities/bandwidthTest and 1_Utilities/deviceQuery are both good ones
+
+	$ cd /home/samples/1_Utilities/deviceQuery
+
+	b. If fully installed we could use Makefile, but in this case we will compile with the CUDA NVIDIA C Compiler manually
+	c. Compile and run sample with following commands (using deviceQuery as example)
+
+	$ nvcc deviceQuery.cpp -I../../common/inc
+
+	$ ./a.out
+	<output of deviceQuery
+	.
+	.
+	.>
